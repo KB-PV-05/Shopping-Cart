@@ -1,0 +1,47 @@
+<section>
+    <div class="container mt-4">
+        <div class="form-row">
+
+            <div class="col-md-6">
+                <h2 class="text-center">Edit Product</h2><br/>
+
+                <form action="/admin/edit-product/{{product._id}}" method="POST" enctype="multipart/form-data">
+                    
+                    <label for="">Name</label>
+                    <div class="d-flex align-items-start">
+                    <input type="text" name="Name" class="from-control" value="{{product.Name}}"></div>
+                    
+                    
+                    <label for="">Category</label>
+                    <div class="d-flex align-items-start">
+                    <input type="text" name="Category" class="from-control" value="{{product.Category}}"></div>
+                    
+                    
+                    <label for="">Price</label>
+                    <div class="d-flex align-items-start">
+                    <input type="text" name="Price" class="from-control" value="{{product.Price}}"></div>
+               
+                  
+                    <label for="">Description</label>
+                    <div class="d-flex align-items-start">
+                    <input type="text" name="Descrpition" class="from-control" value="{{product.Description}}"></div>
+                    <br />
+                   
+                    <label for="">Image</label>
+                    <img src="/product-images/{{product._id}}.jpg" alt="" style="width: 100px;height;auto" id="imgView">
+                    <input type="file"  name="Image" class="from-control" onchange="viewImage(event)">
+                    <br />
+                    <br />
+                    
+                    <button type="submit" class="btn btn-success mt-4">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function viewImage(event){
+        document.getElementById('imgView').src=URL.createObjectURL(event.target.files[0])
+    }
+    </script>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Order</title>
+</head>
+
+<body>
+    <section>
+        <div class="container mt-5">
+            <form action="" id="checkout-form">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2>Enter Delivery Details</h2><br>
+                        <div>
+                            <label for="">Address</label>
+                            <input class="form-control" type="text" id="address" name="address">
+                            <label for="">Pincode</label>
+                            <input class="form-control" type="text" id="pincode" name="pincode">
+                            <label for="">Mobile</label>
+                            <input class="form-control" type="text" id="mobile" name="mobile">
+                            <input type="text" name="userId" id="" value="{{user._id}}" hidden>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="container mt-5 ml-5 checkout">
+                            <h5>Total Amount : Rs.{{total}}</h5>
+                            <hr>
+                            <div class="payment">
+                                <p>Payment Method</p>
+                                <label class="radio-inline">
+                                    <input type="radio" name="payment-method" value="COD" checked>COD
+                                </label>
+                                <label class="radio-inline mt-2">
+                                    <input type="radio" name="payment-method" value="ONLINE">Online Payment
+                                </label>
+                                <button class="btn btn-primary float-right" type="submit">Checkout</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="totalAmount" name="totalAmount" value="{{total}}">
+            </form>
+        </div>
+    </section>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+         $("#checkout-form").submit((e) => {
+    e.preventDefault();
+    let paymentMethod = $('input[name="payment-method"]:checked').val();
+    let order = {}; // Define order here
+
+    if (paymentMethod === 'ONLINE') {
+        order = {
+            totalAmount: parseFloat($("#totalAmount").val()), 
+            order_id: order.id 
+        };
+        razorpayPayment(order);
+    } else {
+        $.ajax({
+            method: "POST",
+            url: "/place-order",
+            data: $('#checkout-form').serialize(),
+            success: (response) => {
+                alert(response)
+                if (response.status) {
+                    location.href = '/order-success'
+                }
+            }
+        });
+    }
+});
+        function razorpayPayment(order) {
+            var options = {
+                "key": "rzp_test_itibwGYxmeq7WE",
+                "amount": order.totalAmount * 100,
+                "currency": "INR",
+                "name": "Acme Corp",
+                "description": "Test Transaction",
+                "image": "https://example.com/your_logo",
+                "order_id": order.id,
+                "handler": function (response) {
+                    verifyPayment(response, order);
+                },
+                "prefill": {
+                    "name": "Parvathy Vidhya",
+                    "email": "pv@example.com",
+                    "contact": "9999999999"
+                },
+                "notes": {
+                    "address": "Razorpay Corporate Office"
+                },
+                "theme": {
+                    "color": "#3399cc"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        }
+
+     
+function verifyPayment(payment, order) {
+    const data = {
+        razorpay_payment_id: payment.razorpay_payment_id, 
+        razorpay_order_id: order.id,
+        razorpay_signature: payment.razorpay_signature 
+    };
+
+
+    $.ajax({
+        url: '/verify-payment',
+        data: data,
+        method: 'post',
+        success: (response) => {
+            if (response.status) {
+                console.log(response.status);
+                location.href = '/order-success';
+            } else {
+                alert("Payment verification successfull");
+            }
+        },
+        error: () => {
+            alert("An error occurred while verifying payment");
+        }
+    });
+}
+
+    </script>
+
+    <style>
+        input[type=radio] {
+            width: 20px;
+            height: 20px
+        }
+
+        label.radio-inline {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkout {
+            border: 1px solid;
+            border-radius: 3px;
+            padding: 30px;
+        }
+
+        .payment {
+            padding-bottom: 16px;
+        }
+    </style>
+</body>
+
+</html>

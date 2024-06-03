@@ -1,0 +1,49 @@
+<section class="container mt-5">
+  <div class="col-md-12">
+    {{#if userData}}
+      <h3 class="text-center">Orders from <strong>{{user.Name}}</strong> <small>{{user.Email}}</small></h3>
+
+    {{else}}
+      <h3 class="text-center">Orders from all users</h3>
+    {{/if}}
+    <hr />
+  </div>
+  <div style="overflow-x: auto;padding-left: 1em;padding-right: 1em;" class="row">
+    <table class="table col-md-12 table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Date</th>
+          <th>Address</th>
+          <th>Pincode</th>
+          <th>Mobile</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Payment</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#if userOrders.length}}
+          {{#each userOrders}}
+            <tr>
+              <td>{{this.date}}</td>
+              <td>{{this.deliveryDetails.address}}</td>
+              <td>{{this.deliveryDetails.pincode}}</td>
+              <td>{{this.deliveryDetails.mobile}}</td>
+              <td>{{this.totalAmount}}</td>
+              <td>{{this.paymentMethod}}</td>
+              <td>{{this.status}}</td>
+              <td id="status-{{this._id}}">{{this.status}}</td>
+              <td>
+                <a href="/all-users/{{this._id}}" class="btn btn-primary">View Products</a>
+              </td>
+            </tr>
+          {{/each}}
+        {{else}}
+          <tr>
+            <td colspan="7" class="text-center">No orders found</td>
+          </tr>
+        {{/if}}
+      </tbody>
+    </table>
+  </div>
+</section>
